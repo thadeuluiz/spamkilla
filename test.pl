@@ -16,7 +16,7 @@ my %config = (
   points_threshold => undef,
   keywords_regex => undef,
   blacklist => [],
-  keywords_points => {}
+  keywords_points => { }
 );
 
 #open my $fh, '<', $config{'config_file'} or die "Cannot open ‘$config{'config_file'}’ for reading: $!";
@@ -29,10 +29,14 @@ my %config = (
 #iterate file
 #respond
 
-initialize_configs();
-populate_keywords();
-populate_blacklist();
+initialize();
 print Dumper(\%config);
+
+sub initialize {
+  initialize_configs();
+  populate_keywords();
+  populate_blacklist();
+}
 
 sub initialize_configs {
   while( my $config_line = <DATA>){

@@ -1,0 +1,7 @@
+#rules
+
+#keyword matching
+#blacklist sender
+#subject properties
+#capslock properties
+#too many urls
