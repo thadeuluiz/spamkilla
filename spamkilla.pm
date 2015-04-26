@@ -17,17 +17,31 @@ our $VERSION = 0.1;
 sub new {
   my ($class, $arg_for) = @_;
   my $this = bless {}, $class;
-  $this->_init($arg_for->{config_file});
+  $this->_init($arg_for->{config_file}, $arg_for->{blacklist_file});
   return $this;
 }
 
 sub _init {
-  my ($this, $config) = @_;
+  my ($this, $config, $blacklist) = @_;
+  my @lines = [];
   open my $cf, '<', $config;
-
-  #TODO....
-
+  while (<$cf>){
+    next if (/^\s*#/);
+    foreach (/\s+(\w+)\s+(\d+[,\.]?\d*)\s*$/gi){
+      $this->{keywords_regex} = join $this->{keywords_regex}, $1;
+      $this->{keywords_hash}->{lc($1)} = $2;
+    }
+    $this->{caps_sensitivity} = $1 if (/^caps\s*sensitivity:\s+(\d+)\s*$/i);
+    $this->{caps_points} = $1 if (/^caps\s*points:\s+(\d+[,\.]?\d*)\s*$/i);
+    $this->{points_threshold} = $1 if (/^points\s*threshold:\s+(\d+)\s*$/i);
   close $cf;
+  open my $bl, '<', $blacklist;
+  while (<$bl>){
+    next if (/^\s*#/);
+    push @this->{blacklist}, lc($1) if ( /^\s*(\S+)\s*/);
+  }
+  close $bl;
+  #TODO....
 }
 
 #count keyword value
@@ -44,7 +58,7 @@ sub _eval_capslock {
   $this->{word_count} += scalar (() = $line =~ /\w+/g);
   $this->{caps_count} += scalar (() = $line =~
     /\b(?=.*[A-Z])[A-Z0-9_]{$this->{caps_sensitivity}, }\b/g);
-  #check for entirely caps words with atleast n letters and a capslocked letter
+  #check for entirely caps words with at least n letters and a capslocked letter
 }
 
 #check for https, sshs and ftps
