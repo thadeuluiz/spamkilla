@@ -30,6 +30,7 @@ sub _init {
   $this->{empty_subject} = 0;
   $this->{keywords_regex} = "";
   $this->{blacklisted_sender} = 0;
+  $this->{empty_subject_points} = 0;
   open my $cf, '<', $config;
   while (<$cf>){
     next if (/^\s*#/);
@@ -56,6 +57,7 @@ sub _eval_keywords {
   foreach($line =~ m/$this->{keywords_regex}/i){
     $this->{points} += $this->{keywords_hash}->{lc($_)};
   }
+  return $this->{points};
 }
 
 #count total words and total capslocked words
@@ -91,4 +93,11 @@ sub _eval_subject {
       $this->{empty_subject} = 1;
     }
   }
+}
+
+#sum points from rules
+sub _sum_points {
+  my ($this, $line) = @_;
+  return 
+
 }
