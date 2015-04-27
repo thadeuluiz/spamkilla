@@ -31,6 +31,7 @@ sub _init {
   $this->{keywords_regex} = "";
   $this->{blacklisted_sender} = 0;
   $this->{empty_subject_points} = 0;
+  $this->{url_points} = 0;
   open my $cf, '<', $config;
   while (<$cf>){
     next if (/^\s*#/);
@@ -41,7 +42,9 @@ sub _init {
     }
     $this->{caps_sensitivity} = $1 if (/^caps\s*sensitivity:\s+(\d+)\s*$/i);
     $this->{caps_points} = $1 if (/^caps\s*points:\s+(\d+[,\.]?\d*)\s*$/i);
-    $this->{points_threshold} = $1 if (/^points\s*threshold:\s+(\d+)\s*$/i);
+    $this->{points_threshold} = $1 if (/^points\s*threshold:\s+(\d+[,\.]?\d*)\s*$/i);
+    $this->{empty_subject_points} = $1 if (/^empty\s*subject\s*points:\s+(\d+[,\.]?\d*)\s*$/i);
+    $this->{url_points} = $1 if (/^url\s*points:\s+(\d+[,\.]?\d*)\s*$/i);
   close $cf;
   open my $bl, '<', $blacklist;
   while (<$bl>){
@@ -98,6 +101,6 @@ sub _eval_subject {
 #sum points from rules
 sub _sum_points {
   my ($this, $line) = @_;
-  return 
+  _eval_keywords + 
 
 }
