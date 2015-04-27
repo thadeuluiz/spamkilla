@@ -23,12 +23,19 @@ sub new {
 
 sub _init {
   my ($this, $config, $blacklist) = @_;
-  my @lines = [];
+  $this->{points} = 0;
+  $this->{url_count} = 0;
+  $this->{word_count} = 0;
+  $this->{caps_count} = 0;
+  $this->{empty_subject} = 0;
+  $this->{keywords_regex} = "";
+  $this->{blacklisted_sender} = 0;
   open my $cf, '<', $config;
   while (<$cf>){
     next if (/^\s*#/);
     foreach (/\s+(\w+)\s+(\d+[,\.]?\d*)\s*$/gi){
-      $this->{keywords_regex} = join $this->{keywords_regex}, $1;
+      $this->{keywords_regex} = $this->{keywords_regex}." ";
+      $this->{keywords_regex} = $this->{keywords_regex}.$1;
       $this->{keywords_hash}->{lc($1)} = $2;
     }
     $this->{caps_sensitivity} = $1 if (/^caps\s*sensitivity:\s+(\d+)\s*$/i);
@@ -38,10 +45,9 @@ sub _init {
   open my $bl, '<', $blacklist;
   while (<$bl>){
     next if (/^\s*#/);
-    push @this->{blacklist}, lc($1) if ( /^\s*(\S+)\s*/);
+    push @$this->{blacklist}, lc($1) if ( /^\s*(\S+)\s*/);
   }
   close $bl;
-  #TODO....
 }
 
 #count keyword value
